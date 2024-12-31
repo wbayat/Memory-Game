@@ -2,24 +2,25 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btn").addEventListener("click", startGame);
 });
 
-var level = 4;
+var rows = 4;
+var secretCount = 4;
 function startGame() {
   var mistakes = 0;
-  var time = 2;
+  var time = 1;
   var timer = 1000 * time;
   var tileId = 0;
   var selected = [];
-  var secret = generatePattern(level);
+  var secret = generatePattern(secretCount, rows);
   const message = document.getElementById("message");
   const container = document.getElementById("container");
   const btn = document.getElementById("btn");
   btn.removeEventListener("click", startGame);
   btn.innerHTML = "Submit";
 
-  container.style.gridTemplateColumns = `repeat(${level}, auto)`;
+  container.style.gridTemplateColumns = `repeat(${rows}, auto)`;
   container.innerHTML = "";
 
-  for (let i = 0; i < level ** 2; i++) {
+  for (let i = 0; i < rows ** 2; i++) {
     var tile = document.createElement("div");
     tile.id = tileId.toString();
     tileId++;
@@ -35,7 +36,7 @@ function startGame() {
     if (time == -1) {
       message.innerHTML = "Enter the pattern!";
       clearInterval(interval);
-      for (let i = 0; i < level ** 2; i++) {
+      for (let i = 0; i < rows ** 2; i++) {
         var tile = document.getElementById(i.toString());
         tile.addEventListener("click", tileClick);
       }
@@ -68,7 +69,7 @@ function startGame() {
 
   const evaluate = () => {
     btn.removeEventListener("click", evaluate);
-    for (let i = 0; i < level ** 2; i++) {
+    for (let i = 0; i < rows ** 2; i++) {
       var tile = document.getElementById(i.toString());
       tile.removeEventListener("click", tileClick);
     }
@@ -88,11 +89,17 @@ function startGame() {
     }
     if (mistakes < 4) {
       message.innerHTML = `You WON with ${mistakes} mistakes!`;
-      level++;
+      if (secretCount >= (1 / 3) * rows ** 2) {
+        rows++;
+        secretCount = 4;
+      } else {
+        secretCount++;
+      }
       btn.innerHTML = "Next Level";
     } else {
       message.innerHTML = `You LOST with ${mistakes} mistakes!`;
-      level = 4;
+      secretCount = 4;
+      rows = 4;
       btn.innerHTML = "Restart";
     }
     btn.addEventListener("click", startGame);
@@ -106,10 +113,10 @@ function startGame() {
  * @param {Number} n
  * @returns an array of size (2/3 n^2) which contains integers between 0 and n^2
  */
-function generatePattern(n) {
+function generatePattern(n, rows) {
   var secret = [];
-  for (let i = 0; i < n ** 2 / 3; i++) {
-    var num = Math.floor(Math.random() * n ** 2);
+  for (let i = 0; i < n; i++) {
+    var num = Math.floor(Math.random() * rows ** 2);
     if (!secret.includes(num.toString())) {
       secret.push(num.toString());
     } else {
