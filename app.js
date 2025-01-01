@@ -1,18 +1,27 @@
+var level = 4;
+
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btn").addEventListener("click", startGame);
+  container.style.gridTemplateColumns = `repeat(${level}, auto)`;
+  for (let i = 0; i < level ** 2; i++) {
+    var tile = document.createElement("div");
+    tile.classList.add("tile");
+    container.appendChild(tile);
+  }
 });
 
-var level = 4;
 function startGame() {
   var mistakes = 0;
-  var time = 2;
+  var time = 3;
   var timer = 1000 * time;
   var tileId = 0;
   var selected = [];
   var secret = generatePattern(level);
+
   const message = document.getElementById("message");
   const container = document.getElementById("container");
   const btn = document.getElementById("btn");
+
   btn.removeEventListener("click", startGame);
   btn.innerHTML = "Submit";
 
@@ -87,7 +96,8 @@ function startGame() {
       }
     }
     if (mistakes < 4) {
-      message.innerHTML = `You WON with ${mistakes} mistakes!`;
+      message.innerHTML = `You WON with ${mistakes} `;
+      message.innerHTML += mistakes == 1 ? "mistake!" : "mistakes!";
       level++;
       btn.innerHTML = "Next Level";
     } else {
